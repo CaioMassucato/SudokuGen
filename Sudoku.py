@@ -1,6 +1,17 @@
 import copy
 import random
-from utils import board
+
+board = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
 class Sudoku:
     def __init__(self, code=None):
@@ -16,7 +27,7 @@ class Sudoku:
         else:
             self.code = None
     
-    def resetSudoku(self): # resets the board to an empty state
+    def resetSudoku(self):
         self.board = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -31,7 +42,8 @@ class Sudoku:
 
         return self.board
     
-    def boardToCode(self, input_board=None): # turn a pre-existing board into a code
+    def boardToCode(self, input_board=None):
+        '''Transforms a board to a code format'''
         if input_board:
             _code = ''.join([str(i) for j in input_board for i in j])
             return _code
@@ -39,7 +51,8 @@ class Sudoku:
             self.code = ''.join([str(i) for j in self.board for i in j])
             return self.code
     
-    def getEmptyNum(self): # finds the first empty space in the board, which is represented by a 0
+    def getEmptyNum(self):
+        '''Get first empty spot on the board'''
         for row in range(len(self.board)):
             for col in range(len(self.board[0])):
                 if self.board[row][col] == 0:
@@ -47,29 +60,35 @@ class Sudoku:
 
         return False
     
-    def checkSpace(self, num, space): #checks to see if a number can be fitted into a specifc space; row, col
-        if not self.board[space[0]][space[1]] == 0: # check to see if space is a number already
+    def checkSpace(self, num, space):
+        '''Checks if a number can be placed into a specifc row or col'''
+
+        # checks if spot is a sudoku number
+        if not self.board[space[0]][space[1]] == 0:
             return False
 
-        for col in self.board[space[0]]: # check to see if number is already in row
+         # checks if number is in row
+        for col in self.board[space[0]]:
             if col == num:
                 return False
 
-        for row in range(len(self.board)): # check to see if number is already in column
+        # checks if number is in col
+        for row in range(len(self.board)):
             if self.board[row][space[1]] == num:
                 return False
 
         _internalBoxRow = space[0] // 3
         _internalBoxCol = space[1] // 3
 
-        for i in range(3): # check to see if internal box already has number
+        for i in range(3):
             for j in range(3):
                 if self.board[i + (_internalBoxRow * 3)][j + (_internalBoxCol * 3)] == num:
                     return False
         
         return True
     
-    def solveSudoku(self): # solveSudokus a board using recursion
+    def solveSudoku(self): 
+        '''Recursively solves a Sudoku Board'''
         _spacesAvailable = self.getEmptyNum()
 
         if not _spacesAvailable:
@@ -88,10 +107,12 @@ class Sudoku:
 
         return False
     
-    def solveSudokuForCode(self): # solveSudokus a board and returns the code of the solveSudokud board
+    def solveSudokuToCode(self):
+        '''Solves Sudoku and returns its code'''
         return self.boardToCode(self.solveSudoku())
     
-    def generateRandSudoku(self): # generates a brand new completely random board full of numbers
+    def generateRandSudoku(self):
+        '''Generates a fully randomized board'''
         self.resetSudoku()
 
         line = list(range(1, 10))
@@ -117,7 +138,8 @@ class Sudoku:
 
         return self.createSudokuBoard()
     
-    def createSudokuBoard(self): # uses recursion to finish generating a random board
+    def createSudokuBoard(self):
+        '''Uses recursion to finish generating the board'''
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
                 if self.board[row][col] == 0:
@@ -134,7 +156,9 @@ class Sudoku:
 
         return False
     
-    def generateQuestionSudoku(self, fullSudoku, difficulty): # generates a question board with a certain number of cells removed depending on the chosen difficulty
+    def generateSudoku(self, fullSudoku, difficulty):
+        '''Generates a board by removing a given number of cells based
+            on the difficulty from the fully random generated board'''
         self.board = copy.deepcopy(fullSudoku)
         
         if difficulty == 0:
@@ -184,6 +208,6 @@ class Sudoku:
 
         return self.board, fullSudoku
     
-    def generateQuestionSudokuCode(self, difficulty): # generates a new random board and its board code depending on the difficulty
-        self.board, _solution_board = self.generateQuestionSudoku(self.generateRandSudoku(), difficulty)
+    def generateSudokuCode(self, difficulty): # generates a new random board and its board code depending on the difficulty
+        self.board, _solution_board = self.generateSudoku(self.generateRandSudoku(), difficulty)
         return self.boardToCode(), self.boardToCode(_solution_board)
